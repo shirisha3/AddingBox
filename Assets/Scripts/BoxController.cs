@@ -12,6 +12,10 @@ public class BoxController : MonoBehaviour
     private bool ignoreTrigger;
     private Rigidbody2D rb2D;
 
+    //using delegate 
+    public delegate void changeEnemyColor(Color col);
+    public static event changeEnemyColor onPlayerBoxHit;
+
     private void Awake()
     {
 
@@ -35,7 +39,6 @@ public class BoxController : MonoBehaviour
     void Update()
     {
         MoveBox();
-        
     }
     void MoveBox()
     {
@@ -86,7 +89,13 @@ public class BoxController : MonoBehaviour
            Invoke("Landed",1f);
             
             ignoreCollision = true;
-        }          
+        }
+        if (target.gameObject.tag == "Enemy")
+        {
+            onPlayerBoxHit(Color.red);
+            CancelInvoke("Landed");
+            Invoke("ReplayGame", 2f);
+        }
     }
     private void OnTriggerEnter2D(Collider2D target)
     {
@@ -94,7 +103,6 @@ public class BoxController : MonoBehaviour
             return;
         if(target.tag=="GameOver")
         {
-            Debug.Log("enter into trigger");
            CancelInvoke("Landed");
             gameOver = true;
             ignoreTrigger = true;
